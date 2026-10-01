@@ -1,6 +1,6 @@
-# Using AI With This Template
+# Using AI With This Project
 
-This template was built with AI assistance, and it is wired so that AI tools are useful on it from the first clone. Nothing here requires you to use AI — every command works the same way by hand. But if you do, the scaffolding is already in place.
+This project started from a template that was built with AI assistance, and it is wired so that AI tools are useful on it from the first clone. Nothing here requires you to use AI — every command works the same way by hand. But if you do, the scaffolding is already in place.
 
 Two ideas drive the design:
 
@@ -11,42 +11,28 @@ Two ideas drive the design:
 
 | Piece | Where | What it does |
 | --- | --- | --- |
-| Instruction files | `claude.md`, `AGENTS.md`, `.github/copilot-instructions.md` (and their `-for-users` counterparts) | Tell an assistant how to work in this repository |
+| Instruction files | `claude.md`, `AGENTS.md`, `.github/copilot-instructions.md` | Tell an assistant how to work in this repository |
 | Documentation MCP servers | `.mcp.json`, `.vscode/mcp.json` | Let an assistant read current Cloudflare and Discord documentation instead of guessing |
 | GitHub MCP server | `.mcp.json`, `.vscode/mcp.json` | Lets an assistant read issues and repository data you already have access to |
 | Contract tests | `test/contracts/` | Fail the build when a change breaks an environment or workflow promise |
-| Coverage ratchet | `vitest.config.js` | Fails the build when new code lands untested |
+| Coverage floor | `vitest.config.js` | Fails the build when new code lands untested |
 | Human gates | `DEPLOY_ENABLED`, protected environments, required review | Keep deployment and production out of reach of automation |
 
 ## The instruction files
 
-This repository ships two parallel sets of three files, because different tools look for different filenames and because a template has a different audience than the project built from it:
+Three files carry the same guidance, because different tools look for different filenames:
 
-| Maintainer file (this repository) | Read by | Downstream counterpart |
-| --- | --- | --- |
-| [claude.md](../claude.md) | Claude Code, and the canonical version of the guidance | `claude-for-users.md` |
-| [AGENTS.md](../AGENTS.md) | Tools that follow the `AGENTS.md` convention | `AGENTS-for-users.md` |
-| [.github/copilot-instructions.md](../.github/copilot-instructions.md) | GitHub Copilot | `.github/copilot-instructions-for-users.md` |
+| File | Read by |
+| --- | --- |
+| [claude.md](../claude.md) | Claude Code, and the fullest version of the guidance |
+| [AGENTS.md](../AGENTS.md) | Tools that follow the `AGENTS.md` convention |
+| [.github/copilot-instructions.md](../.github/copilot-instructions.md) | GitHub Copilot |
 
-The left column describes maintaining *this template* for many future projects: mission and scope, downstream alignment, an instruction contract version. The `-for-users` files describe building *an application* on top of it: environment isolation, TDD, secrets handling, treating MCP results as research rather than authorization — with the template-maintenance-only material removed. Neither set is a subset of the other; they're written for different jobs.
-
-`claude.md` and `claude-for-users.md` are each the full guide for their audience; the `AGENTS.md`/`.github/copilot-instructions.md` files and their `-for-users` counterparts are shorter entry points that stay consistent with the matching full guide, not independent sources of truth.
-
-The maintainer files carry an **instruction contract version** in their headers, separate from the package version, so a change to what this template requires is visible and reviewable rather than silent. See [Versioning and changesets](versioning-and-changesets.md#two-version-numbers). The `-for-users` files carry no such version — a single application has no upstream file to stay in sync with, so the concept doesn't apply once they're in place.
-
-### Switching to the downstream files
-
-`npm run setup` did this for you, once, when you created your project — see step 1 of [Using This Template](using-this-template.md#1-create-and-clone-your-repository). It renamed `claude-for-users.md` to `claude.md`, `AGENTS-for-users.md` to `AGENTS.md`, and `.github/copilot-instructions-for-users.md` to `.github/copilot-instructions.md`, leaving three files rather than six. Running it with `--ai delete` removes all six instead; `--ai keep` leaves the decision for later.
-
-The files are replaced outright rather than edited down. A half-edited maintainer file is easy to leave half-finished, and it would still carry the instruction-contract-version machinery a single application has no use for. It is also why setup does all three renames or none: three is a coherent layout and six is a coherent layout, but two is a repository nobody can reason about.
-
-`npm test` checks the outcome either way. The contract test works out which of the three layouts it is looking at, holds the template to the version contract, holds a project to *not* carrying one, and fails a swap that only happened for some of the three.
-
-From there, the files describe your project and your project alone. Edit them as your requirements change; there is no upstream sync to preserve.
+`claude.md` is the full guide; the other two are shorter entry points that stay consistent with it rather than independent sources of truth. They describe *this project* — environment isolation, TDD, secrets handling, treating documentation lookups as research rather than authorization. Edit them as your requirements change; there is no upstream sync to preserve. If you don't use AI tooling, delete all three.
 
 ## MCP servers
 
-Both configuration files declare the same three servers in the two schemas that tools expect. `.mcp.json` uses the Claude-compatible `mcpServers` key; `.vscode/mcp.json` uses VS Code's `servers` key. A contract test asserts both stay in agreement.
+Both configuration files declare the same servers in the two schemas that tools expect. `.mcp.json` uses the Claude-compatible `mcpServers` key; `.vscode/mcp.json` uses VS Code's `servers` key. A contract test asserts both stay in agreement.
 
 - **Cloudflare Docs** (`https://docs.mcp.cloudflare.com/mcp`) — current Workers and Wrangler documentation. This matters more than it sounds: Cloudflare's platform moves quickly, and a model's training data will confidently describe Wrangler behavior that changed a year ago. Looking it up beats remembering it.
 - **Discord Docs** (`https://docs.discord.com/mcp`) — Discord's own read-only documentation server, for the interaction contract this bot implements: required signature headers, response types, acknowledgement windows, and the bulk-overwrite semantics of command registration. Those details are exactly the kind a model recalls plausibly and wrongly, and getting the signature part wrong is a security bug rather than a broken feature.
@@ -62,7 +48,7 @@ In VS Code, `.vscode/mcp.json` is the configuration to use. If you rely on anoth
 
 Reading documentation is research. It is not permission to deploy, change a Cloudflare account, create resources, or handle secrets. An assistant that has just read the Wrangler documentation still has no business running a deployment.
 
-Verify important platform claims against official documentation, and record the decision and the link in the repository when it affects the template contract. A documentation link in a pull request is worth more than a confident assertion in a chat window.
+Verify important platform claims against official documentation, and record the decision and the link in the repository when it affects how this project is configured. A documentation link in a pull request is worth more than a confident assertion in a chat window.
 
 ## The guardrails that actually hold
 
@@ -76,13 +62,12 @@ Instruction files are advisory. These are not.
 - The release workflow must keep its reviewed shape.
 - One Node.js version, declared in one place.
 - The coverage thresholds must exist and must be above zero.
-- The instruction files must form one coherent set — either the template's six, with a single agreed contract version across the maintainer three, or your project's after the swap, carrying no version at all. A half-finished swap fails.
 
 This is the layer that makes AI assistance safe here. An assistant that suggests pointing non-production at a production database does not produce a subtle bug for a reviewer to catch six weeks later — it produces a failing test, immediately, before anything is deployed. When a contract test fails, that is the system working.
 
-**The coverage ratchet** turns "please write tests" from a request into a build failure. `npm test` measures coverage over `src/` and `scripts/lib/` and fails when it falls below the thresholds in `vitest.config.js`. Untested code cannot land, whoever wrote it.
+**The coverage floor** turns "please write tests" from a request into a build failure. `npm test` measures coverage over `src/` and `scripts/lib/` and fails when it falls below the thresholds in `vitest.config.js`. Untested code cannot land, whoever wrote it.
 
-It only moves one way. Raising a threshold is a hand-edit in a reviewed diff; lowering one to make a change pass is the thing the ratchet exists to prevent. If you ask an assistant for a feature and it comes back having relaxed a threshold, that is the finding, not the fix — and the contract test above means deleting the thresholds outright fails too.
+It should only move one way. Raising a threshold is a hand-edit in a reviewed diff; lowering one to make a change pass defeats the point of having it. If you ask an assistant for a feature and it comes back having relaxed a threshold, that is the finding, not the fix — and the contract test above means deleting the thresholds outright fails too.
 
 **Human gates** cover what tests cannot. Deployment is off until you set `DEPLOY_ENABLED`, production requires environment approval, protected branches require review, and Cloudflare credentials live in GitHub secrets that no local tool can read. Automation can open a pull request; it cannot ship to production.
 
@@ -96,7 +81,7 @@ None of that is checked by a test, and it cannot be: a contract test reads a che
 
 **Ask for current documentation.** When a change touches Wrangler configuration, compatibility dates, or bindings, ask the assistant to check the Cloudflare documentation and cite what it found.
 
-**Review the diff, every time.** Look specifically for secrets, cross-wired environments, application logic that drifted into the template, and unnecessary lockfile churn. This is in the change workflow in `claude.md` because it is the step most easily skipped.
+**Review the diff, every time.** Look specifically for secrets, cross-wired environments, and unnecessary lockfile churn. This is in the change workflow in `claude.md` because it is the step most easily skipped.
 
 **Run the checks yourself.** `npm test` and `npm run lint` are the same commands CI runs. Do not take "the tests should pass" for an answer.
 

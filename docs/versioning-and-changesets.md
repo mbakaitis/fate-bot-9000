@@ -69,17 +69,6 @@ Run these on an up-to-date `main`, and push the resulting commit and tag through
 
 Versioning and deployment are independent. Creating a version and tag does not deploy anything, and deploying does not create a version. Deploying the resulting `main` commit is governed by the opt-in deployment workflow described in [Gitflow and branching](gitflow-and-branching.md#deployment-is-opt-in).
 
-## Two version numbers
-
-This repository carries two, and they move independently:
-
-| Version | Where | Describes |
-| --- | --- | --- |
-| Package version | `package.json`, `CHANGELOG.md`, Git tags | The template's code, configuration, and workflows |
-| Instruction contract version | Headers of `claude.md`, `AGENTS.md`, `.github/copilot-instructions.md` | The requirements maintainers and AI assistants must follow |
-
-Both use Semantic Versioning, but a change to maintenance requirements is not the same as a change to the shipped template. Keep the instruction contract version identical across all three instruction files. See [CONTRIBUTING.md](../CONTRIBUTING.md#keeping-the-instruction-files-in-sync).
-
 ## What every release should state
 
 - What changed.
@@ -92,6 +81,6 @@ Both use Semantic Versioning, but a change to maintenance requirements is not th
 
 Your project may use this same Changesets workflow, and it is preconfigured for you. Your release cadence and versioning are your own — your application's bindings, deployment policy, and compatibility promises are not this template's to decide.
 
-When you adopt an upstream release, review it as a change to your project rather than an automatic update. Read this template's `CHANGELOG.md` entry, check whether it says migration is required, and classify the effect on *your* version yourself. See [Keeping up with upstream changes](using-this-template.md#10-keeping-up-with-upstream-changes).
+When you adopt an upstream release, review it as a change to your project rather than an automatic update. Read this template's `CHANGELOG.md` entry, check whether it says migration is required, and classify the effect on *your* version yourself. See [Keeping up with upstream changes](https://github.com/mbakaitis/cloudflare-workers-discord-template/blob/main/docs/using-this-template.md#10-keeping-up-with-upstream-changes).
 
 If you make your package public or want npm publication, update the Changesets `access` and `privatePackages` settings in `.changeset/config.json`, add registry authentication through CI secrets, and review `.github/workflows/release.yml` before enabling publication. Never commit registry credentials.

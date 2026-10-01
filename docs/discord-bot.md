@@ -1,6 +1,6 @@
 # The Discord Bot
 
-This document describes how the bot itself works: what happens to an interaction between Discord sending it and your code answering it, and which module owns which part of that. Project setup — Discord applications, secrets, deployment — lives in [Using this template](using-this-template.md).
+This document describes how the bot itself works: what happens to an interaction between Discord sending it and your code answering it, and which module owns which part of that. Project setup — Discord applications, secrets, deployment — lives in [Using this template](https://github.com/mbakaitis/cloudflare-workers-discord-template/blob/main/docs/using-this-template.md).
 
 This template receives interactions over **HTTP**, not the Gateway. Discord sends each interaction to your Worker as a signed POST request and expects a response on that same request. There is no persistent connection, no presence, and no message-event stream. That is what makes a Worker a good fit: nothing needs to stay running between interactions.
 
@@ -118,7 +118,7 @@ const response = await dispatchInteraction(
 
 **Declare `type`, `integration_types`, and `contexts` explicitly.** All three have Discord-side defaults. Declaring them makes where a command can be used a property of this repository, reviewable in a diff, instead of a consequence of how the Discord application happens to be configured. Note that Discord applies `integration_types` and `contexts` only to globally-scoped commands; a guild-scoped registration is already confined to its guild.
 
-The shipped definitions declare `BOT_DM` alongside `GUILD`, which assumes the application was installed with the optional `bot` scope — that context is the DM with the bot user, so there has to be one. Drop `BOT_DM` if you would rather install with `applications.commands` alone; see [Install the non-production application in your test server](using-this-template.md#install-the-non-production-application-in-your-test-server) for what each scope buys.
+The shipped definitions declare `BOT_DM` alongside `GUILD`, which assumes the application was installed with the optional `bot` scope — that context is the DM with the bot user, so there has to be one. Drop `BOT_DM` if you would rather install with `applications.commands` alone; see [Install the non-production application in your test server](https://github.com/mbakaitis/cloudflare-workers-discord-template/blob/main/docs/using-this-template.md#install-the-non-production-application-in-your-test-server) for what each scope buys.
 
 **Do not trust an option, even a required one.** Discord enforces `required`, but a handler that assumes so throws on the first payload that disagrees — and a thrown handler is a failed interaction, which shows the user Discord's generic error notice and explains nothing. `/echo` reads its option defensively and answers a missing or blank one with an ephemeral message. Options arrive as an array of `{ name, type, value }`, so reading one is a lookup, not a property access.
 
@@ -136,7 +136,7 @@ npm run register:non-prod    # guild-scoped, against the non-production applicat
 npm run register:production  # global, against the production application
 ```
 
-In a configured project you rarely run these by hand: `deploy.yml` runs the matching one after every deploy, guild-scoped from `develop` and global from `main`. See [Commands register themselves on deploy](using-this-template.md#commands-register-themselves-on-deploy). Run them locally when you are working against a tunnel, or when a registration step failed and you want to see the error interactively.
+In a configured project you rarely run these by hand: `deploy.yml` runs the matching one after every deploy, guild-scoped from `develop` and global from `main`. See [Commands register themselves on deploy](https://github.com/mbakaitis/cloudflare-workers-discord-template/blob/main/docs/using-this-template.md#commands-register-themselves-on-deploy). Run them locally when you are working against a tunnel, or when a registration step failed and you want to see the error interactively.
 
 ### Two scopes, stated explicitly
 
@@ -155,7 +155,7 @@ Three properties of that endpoint are worth knowing before you run it:
 
 ### What it needs
 
-Each environment registers against **its own Discord application**, so these are per-environment values, never shared between non-production and production. [Create your Discord applications](using-this-template.md#3-create-your-discord-applications) says where each one comes from.
+Each environment registers against **its own Discord application**, so these are per-environment values, never shared between non-production and production. [Create your Discord applications](https://github.com/mbakaitis/cloudflare-workers-discord-template/blob/main/docs/using-this-template.md#3-create-your-discord-applications) says where each one comes from.
 
 | Variable | Needed for |
 | --- | --- |
@@ -278,7 +278,7 @@ What is answering is `workerd` on your machine under Miniflare, with a public do
 - Any binding you add later (KV, D1, R2, Queues) runs against local simulated state by default, not the resource your environment is configured with.
 - Quick tunnels are documented as testing-only: a 200-concurrent-request limit and no Server-Sent Events. Interactions fit comfortably; do not benchmark through one.
 
-So a tunnel session proves the interaction contract — real signatures over a real network, real dispatch, a real deferred follow-up — and proves nothing about the deploy. Only an actual `--env non-prod` deploy does that; see [Verify the deployment path](using-this-template.md#7-verify-the-deployment-path).
+So a tunnel session proves the interaction contract — real signatures over a real network, real dispatch, a real deferred follow-up — and proves nothing about the deploy. Only an actual `--env non-prod` deploy does that; see [Verify the deployment path](https://github.com/mbakaitis/cloudflare-workers-discord-template/blob/main/docs/using-this-template.md#7-verify-the-deployment-path).
 
 ## Where the rest would attach
 
@@ -288,7 +288,7 @@ This template serves HTTP interactions and stops. The obvious next features are 
 | --- | --- | --- |
 | **Components and modals** | `src/interactions.js`, alongside the type-`2` branch: type `3` (`MESSAGE_COMPONENT`) and type `5` (`MODAL_SUBMIT`), which currently get the deliberate `400`. Route them on `data.custom_id` rather than a command name. | A second registry keyed by `custom_id`, and a convention for encoding state into that string — it is the only thing Discord hands back. |
 | **Autocomplete** | The same dispatcher: type `4` (`APPLICATION_COMMAND_AUTOCOMPLETE`), answered with a type `8` response. Most naturally an optional `autocomplete` export next to a command's `handler`, so the definition, the handler, and its suggestions stay in one file. | Nothing structural, but it is latency-sensitive: autocomplete cannot defer, so the reply has to beat the same window. |
-| **Storage (KV, D1, R2, Queues)** | `wrangler.jsonc`, inside `env.non-prod` and `env.production` only — see [Adding environment-specific bindings](using-this-template.md#adding-environment-specific-bindings). Handlers already receive `env`, so nothing in the dispatch path changes. | Per-environment resources, a local-development story, and contract tests that keep non-production off production data. A Queue is also the answer for work that outlives `waitUntil`'s ~30 seconds. |
+| **Storage (KV, D1, R2, Queues)** | `wrangler.jsonc`, inside `env.non-prod` and `env.production` only — see [Adding environment-specific bindings](https://github.com/mbakaitis/cloudflare-workers-discord-template/blob/main/docs/using-this-template.md#adding-environment-specific-bindings). Handlers already receive `env`, so nothing in the dispatch path changes. | Per-environment resources, a local-development story, and contract tests that keep non-production off production data. A Queue is also the answer for work that outlives `waitUntil`'s ~30 seconds. |
 | **OAuth2** | New routes in `src/index.js` beside `/interactions`, for the redirect and the callback. | A client secret as a fourth per-environment secret, somewhere to store tokens, and a threat model — this is the point where the Worker starts holding user credentials. |
 | **The Gateway** | Nowhere. It needs a persistent WebSocket connection, which a Worker invocation cannot hold. | A long-running process somewhere else. If you need presence or message events, run a Gateway client separately and keep this Worker for interactions; the two can share nothing but a data store. |
 

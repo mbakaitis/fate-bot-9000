@@ -1,14 +1,12 @@
 {
-  "name": "cloudflare-workers-discord-template",
-  "version": "1.0.0",
-  "description": "Boilerplate template for a Discord bot on Cloudflare Workers",
+  "name": "fatebot-9000",
+  "version": "0.0.0",
+  "description": "Fate RPG tools",
   "private": true,
   "keywords": [
     "cloudflare",
     "workers",
     "wrangler",
-    "template",
-    "boilerplate",
     "discord",
     "discord-bot",
     "slash-commands"
@@ -21,7 +19,6 @@
   },
   "scripts": {
     "dev": "wrangler dev",
-    "setup": "node scripts/setup.js",
     "setup:github": "node scripts/setup-github.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -56,5 +53,11 @@
   },
   "dependencies": {
     "discord-interactions": "^4.4.0"
+  },
+  "template": {
+    "repository": "https://github.com/mbakaitis/cloudflare-workers-discord-template",
+    "version": "1.0.0",
+    "commit": "fd5a3eed82aabe2be87f9b50a0a56ce66d5f68f2",
+    "setupDate": "2026-10-01"
   }
 }
