@@ -1,0 +1,47 @@
+name: Deploy Worker
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: deploy
+    if: ${{ vars.DEPLOY_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'production' || 'non-prod' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --env ${{ github.ref_name == 'main' && 'production' || 'non-prod' }}
+      # Registration runs after the deploy, so the Worker that answers a command
+      # is already live when Discord starts advertising it. Every deploy is an
+      # unconditional bulk overwrite; see docs/discord-bot.md.
+      - name: Register production commands globally
+        if: ${{ github.ref_name == 'main' }}
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          DISCORD_APPLICATION_ID: ${{ secrets.DISCORD_APPLICATION_ID }}
+        run: npm run register:production
+      - name: Register non-production commands to the test guild
+        if: ${{ github.ref_name != 'main' }}
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          DISCORD_APPLICATION_ID: ${{ secrets.DISCORD_APPLICATION_ID }}
+          DISCORD_GUILD_ID: ${{ secrets.DISCORD_GUILD_ID }}
+        run: npm run register:non-prod

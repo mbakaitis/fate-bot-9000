@@ -1,0 +1,64 @@
+# The claim this template makes: run `npm run setup` in a fresh copy and the
+# result is a green project with zero manual edits. Nothing else proves it —
+# `test/contracts/setup-acceptance.template-only.test.js` asserts the shape of
+# the generated tree in seconds, but only an install and a full test run in
+# that tree show it works.
+#
+# This is a separate workflow rather than a job in ci.yml for two reasons. The
+# branch-protection required status check is named `test`, and that name must
+# keep meaning the job in ci.yml. And the whole thing is template-only: it
+# spawns `scripts/setup.js`, which deletes itself during setup, so
+# `template-manifest.json` prunes this file along with it. A job inside ci.yml
+# would have to be cut out of a surviving file by regex.
+name: Template acceptance
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  fresh-project:
+    name: fresh-project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # `git archive` rather than a copy of the checkout: the working tree can
+      # hold untracked build output, and what a consumer gets is the tracked
+      # tree. It is committed into a repository of its own because setup
+      # refuses a dirty tree and the surviving contract tests shell out to git.
+      - name: Create a fresh project from this checkout
+        run: |
+          set -euo pipefail
+          project="$(mktemp -d)"
+          echo "PROJECT=$project" >> "$GITHUB_ENV"
+          git archive --format=tar --output="$RUNNER_TEMP/template.tar" HEAD
+          tar -x -f "$RUNNER_TEMP/template.tar" -C "$project"
+          git -C "$project" init --quiet
+          git -C "$project" add -A
+          git -C "$project" \
+            -c user.name='template acceptance' \
+            -c user.email='acceptance@example.invalid' \
+            commit --quiet -m template
+
+      - name: Run setup unattended
+        working-directory: ${{ env.PROJECT }}
+        run: npm run setup -- --name acme-bot --description "Answers questions in chat." --yes
+
+      - name: Install the fresh project
+        working-directory: ${{ env.PROJECT }}
+        run: npm ci
+
+      - name: Lint the fresh project
+        working-directory: ${{ env.PROJECT }}
+        run: npm run lint
+
+      - name: Test the fresh project
+        working-directory: ${{ env.PROJECT }}
+        run: npm test

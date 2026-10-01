@@ -1,0 +1,60 @@
+{
+  "name": "cloudflare-workers-discord-template",
+  "version": "1.0.0",
+  "description": "Boilerplate template for a Discord bot on Cloudflare Workers",
+  "private": true,
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "wrangler",
+    "template",
+    "boilerplate",
+    "discord",
+    "discord-bot",
+    "slash-commands"
+  ],
+  "author": "Matt Bakaitis <matt@bakaitis.com>",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "setup": "node scripts/setup.js",
+    "setup:github": "node scripts/setup-github.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run --coverage && npm run test:contracts",
+    "test:contracts": "node --test test/contracts/*.test.js",
+    "test:watch": "vitest",
+    "changeset": "changeset",
+    "changeset:status": "changeset status",
+    "version": "changeset version && npm install --package-lock-only",
+    "release": "changeset tag",
+    "deploy:non-prod": "wrangler deploy --env non-prod",
+    "deploy:production": "wrangler deploy --env production",
+    "register:non-prod": "node scripts/register-commands.js --guild",
+    "register:production": "node scripts/register-commands.js --global",
+    "register:dry-run": "node scripts/register-commands.js --guild --dry-run"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^3.0.2",
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@vitest/coverage-istanbul": "~4.1.11",
+    "eslint": "^10.10.0",
+    "vitest": "~4.1.11",
+    "wrangler": "^4.131.1"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "fsevents@2.3.3": true,
+    "workerd@1.20260815.1": true,
+    "workerd@1.20260911.1": true
+  },
+  "dependencies": {
+    "discord-interactions": "^4.4.0"
+  }
+}

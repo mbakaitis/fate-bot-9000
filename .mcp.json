@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "cloudflare-docs": {
+      "type": "http",
+      "url": "https://docs.mcp.cloudflare.com/mcp"
+    },
+    "discord-docs": {
+      "type": "http",
+      "url": "https://docs.discord.com/mcp"
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    }
+  }
+}
