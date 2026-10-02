@@ -1,5 +1,3 @@
-# OH NO! DID YOU FORGET WHERE THE REST OF THE DIRECTIONS WENT? LOOK IN [using-this-template](docs/using-this-template.md) AND THEN YOU CAN DELETE THIS PARAGRAPH.
-
 # fatebot-9000
 
 Fate RPG tools
